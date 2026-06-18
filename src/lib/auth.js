@@ -60,7 +60,8 @@ const buildAuth = () => {
       
       useSecureCookies: process.env.NODE_ENV === 'production',
       defaultCookieAttributes: {
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
       },
     },
