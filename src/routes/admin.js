@@ -115,7 +115,10 @@ router.patch(
       
     const target = await getDb().collection('users').findOne({ _id: oid })
     if (target?.email === req.user.email) {
-      return res.status(403).json({ message: 'Cannot modify your own role' })
+      return res.status(403).json({ message: 'You cannot perform destructive actions on your own account.' })
+    }
+    if (target?.role === 'admin') {
+      return res.status(403).json({ message: 'Admins cannot modify or delete other admins.' })
     }
     await getDb()
       .collection('users')
@@ -130,11 +133,6 @@ router.patch(
   asyncHandler(async (req, res) => {
     const oid = toOid(req.params.id)
     if (!oid) return res.status(400).json({ message: 'Invalid id' })
-    
-    const target = await getDb().collection('users').findOne({ _id: oid })
-    if (target?.email === req.user.email) {
-      return res.status(403).json({ message: 'Cannot modify your own premium status' })
-    }
     
     const isPremium = !!req.body?.isPremium
     await getDb()
@@ -153,7 +151,10 @@ router.patch(
     
     const target = await getDb().collection('users').findOne({ _id: oid })
     if (target?.email === req.user.email) {
-      return res.status(403).json({ message: 'Cannot block your own account' })
+      return res.status(403).json({ message: 'You cannot perform destructive actions on your own account.' })
+    }
+    if (target?.role === 'admin') {
+      return res.status(403).json({ message: 'Admins cannot modify or delete other admins.' })
     }
     
     const isBlocked = !!req.body?.isBlocked
@@ -173,10 +174,10 @@ router.delete(
     const user = await getDb().collection('users').findOne({ _id: oid })
     if (!user) return res.status(404).json({ message: 'Not found' })
     if (user.email === req.user.email) {
-      return res.status(403).json({ message: 'Cannot delete your own account' })
+      return res.status(403).json({ message: 'You cannot perform destructive actions on your own account.' })
     }
     if (user.role === 'admin')
-      return res.status(403).json({ message: 'Cannot delete admin' })
+      return res.status(403).json({ message: 'Admins cannot modify or delete other admins.' })
     await getDb().collection('users').deleteOne({ _id: oid })
     res.json({ message: 'User deleted' })
   })
