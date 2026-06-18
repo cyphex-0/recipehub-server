@@ -35,7 +35,7 @@ const app = express()
 
 app.use(
   cors({
-    origin: clientUrl,
+    origin: [clientUrl, 'http://localhost:5173'],
     credentials: true,
   })
 )

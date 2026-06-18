@@ -1,8 +1,4 @@
 
-
-
-
-
 const dns = require('dns')
 
 const SERVERS = (
